@@ -1,0 +1,317 @@
+function digit_numb=digit_counter(file_name)
+    fileID = fopen(file_name,'r');
+    if (fileID>=0)
+       data=fread(fileID, 'char=>char')
+       data=isstrprop(data,'digit')
+       digit_numb=sum(data);
+       fclose(fileID);
+    else
+  %if impossible to open the file, return -1
+    digit_numb=-1;
+        %fprintf('Impossible to open a file');
+    end
+    end
+    
+function mondays=day_counter(year)
+    %Calender for each month
+    Jan=[1:31];   
+    % Check for the leap year
+    if (year==1800 || year==1900)
+        Feb=[1:28];
+    elseif (mod(year,4)==0 || year==2000)
+        Feb=[1:29];
+    else
+        Feb=[1:28];
+    end   
+    Mar=[1:31];
+    Ap =[1:30];
+    May=[1:31];
+    Jun=[1:30];
+    Jul=[1:31];
+    Aug=[1:31];
+    Sep=[1:30];
+    Oct=[1:31];
+    Nov=[1:30];
+    Dec=[1:31];
+    zero=zeros(1,6);
+    
+    all_year=[Jan Feb Mar Ap May Jun Jul Aug Sep Oct Nov Dec zero];
+  % 1st of January - which is a day of the week?   
+    counter=1;
+    calender=zeros(2,371);
+    week=1;
+    %if (year==1776 || year==1781 || year==1787 || year==1798 || year==1810 || year==1821 || year==1827 || year==1838 || year==1849 
+    %|| 
+    %year==1855 || year==1866 || year==1877 || year==1883 || year==1894 || year==1900 || year==1906 || year==1917 || year==1923 || year==1934 || year==1945 || year==1951 || year==1962 || year==1973 || year==1979 || year==1990 || year==2001 || year==2007)    
+     if (year==1776)
+        for (i=1:2)
+            for (j=1:366)
+                if (i==1)
+                    calender(i,j)=counter;
+                    counter=counter+1;
+                    if (counter==8)
+                        counter=1;
+                    end
+                else
+                    calender(i,j)=all_year(j);
+                end
+            end
+        end
+     else    
+     basic_year=1776;
+     week_day=1;
+         while basic_year <year   
+             if (basic_year==1800 || basic_year==1900)
+                 week_day=week_day+1;
+                 if (week_day==8)
+                    week_day=1;
+                 end
+                 basic_year=basic_year+1;   
+             elseif (basic_year==2000 || mod(basic_year,4)==0)
+                 week_day=week_day+2;
+                 basic_year=basic_year+1;
+                 if (week_day==8)
+                    week_day=1;
+                 end
+                 if(week_day==9)
+                    week_day=2;
+                 end
+             else 
+                 week_day=week_day+1;
+                 if (week_day==8)
+                    week_day=1;
+                 end
+                 basic_year=basic_year+1;                
+             end
+         end
+         week=week_day
+       
+   %Fill the calender for the year >1776  
+     for (i=1:2)
+         for (j=1:371)
+             if (i==1)
+                 calender(i,j)=counter;
+                 counter=counter+1;
+                 if (counter==8)
+                     counter=1;
+                 end
+             else
+                 calender(i,week)=all_year(j);
+                 week=week+1;    
+             end
+         end
+     end
+     end
+      calender;
+    mondays=0;
+    
+    for (j=1:371)
+        if (calender(1,j)==1 && calender(2,j)==1)
+           mondays=mondays+1;
+        end
+    end               
+end
+
+function s=huge_add(A,B) 
+   %Check the inputs
+    if (~ischar(A) || ~ischar(B))
+        s=-1
+        return;
+    end     
+    a=findstr(A,'.');
+    c=findstr(A,',');
+    if (~isempty(a) | ~isempty(c))
+        s=-1;
+        return;
+    end
+    Aa=str2num(A);
+    Bb=str2num(B);
+    if (Aa<0 | Bb<0)
+       s=-1;
+       return;  
+    end
+    %------------------------------------------------------------------------------------
+    if (length(A)==length(B))      
+        for i=1:length(A)
+            CC=str2num(A(i))+str2num(B(i));
+            S(i)=CC;
+            if (i~=1 && S(i)>=10)
+                S(i)=mod(S(i),10);
+                %S(i)=z;
+                while i>1              
+                    S(i-1)=S(i-1)+1;           
+                    if (S(i-1)<10 || i==2)
+                       break;
+                    else
+                        if (S(i-1)>=10)
+                            S(i-1)=mod(S(i-1),10);
+                            i=i-1;
+                            %S(i-1)=S(i-1)+1;
+                        end
+                    end
+                end
+            end
+        end
+    
+    elseif (length(A)>length(B))
+        dif=length(A)-length(B);
+        extra_zero=num2str(zeros(1,dif));
+        extra_zero=extra_zero(~isspace(extra_zero))
+        C=strcat(extra_zero,B)
+        B=num2str(C);
+        B=B(~isspace(B))
+        for i=1:length(A)
+            CC=str2num(A(i))+str2num(B(i));
+            S(i)=CC;
+            if (i~=1 && S(i)>=10)
+                S(i)=mod(S(i),10);
+                 while i>1              
+                    S(i-1)=S(i-1)+1;           
+                    if (S(i-1)<10 || i==2)
+                       break;
+                    else
+                        if (S(i-1)>=10)
+                            S(i-1)=mod(S(i-1),10);
+                            i=i-1;
+                            %S(i-1)=S(i-1)+1;
+                        end
+                    end
+                 end
+            end
+        end
+    else   
+        dif=length(B)-length(A);
+        extra_zero=num2str(zeros(1,dif));
+        extra_zero=extra_zero(~isspace(extra_zero))
+        C=strcat(extra_zero,A);
+        A=num2str(C);
+        A=A(~isspace(A))
+        for i=1:length(B)
+            CC=str2num(B(i))+str2num(A(i));
+            S(i)=CC;
+            if (i~=1 && S(i)>=10)
+                S(i)=mod(S(i),10);
+                  while i>1              
+                        S(i-1)=S(i-1)+1;           
+                        if (S(i-1)<10 || i==2)
+                           break;
+                        else
+                            if (S(i-1)>=10)
+                            S(i-1)=mod(S(i-1),10);
+                            i=i-1;
+                            %S(i-1)=S(i-1)+1;
+                            end
+                        end
+                   end
+            end
+        end
+    end  
+            s=num2str(S);
+            s= s(~isspace(s));  
+end
+
+function u64=smallest_multiple(n)
+    
+    u64=uint64(1);
+    for i=1:n
+        u64=u64*(i/gcd(u64,i));
+    end
+    if ( u64==intmax('uint64'))    
+        u64=uint64(0);
+    end   
+end
+
+function [ max_prods ] = maxproduct( A,n)
+    [mpr,maxpR]=mpRows(A,n); 
+        if mpr>-Inf
+            maxpR=sortrows(maxpR,1); end;
+    [mpc,maxpC]=mpRows(A',n);
+        if mpc>-Inf 
+            maxpC=sortrows(fliplr(maxpC),1);end;
+    [mpd,maxpD]=mpDiags(A,n);
+        if mpd>-Inf
+            maxpD=sortrows(maxpD,1); end;
+    [mpod,maxpOD]=mpDiags(fliplr(A),n);
+        if mpod >-Inf 
+            maxpOD=sortrows(maxpOD,1);end;
+        for i=1:size(maxpOD,1)
+        maxpOD(i,2)=size(A,2)-maxpOD(i,2)+1;
+        end
+        [mp,index]=max([mpr,mpc,mpd,mpod]);
+        switch index
+        case 1
+            max_prods=maxpR;
+        case 2
+            max_prods=maxpC;
+        case 3
+            max_prods=maxpD;
+        case 4
+            max_prods=maxpOD;
+    end
+end
+
+function [mp,max_prods]=mpRows(A,n)
+    if n > size(A,2)
+        mp=-Inf;
+        max_prods=[];
+        return
+    end
+    mp=-Inf;
+    rows=size(A,1);
+    cols=size(A,2);
+    for i= 1:rows
+        for j=1:cols-n+1
+          thisprod=prod(A(i,j:j+n-1));
+          
+          if thisprod==Inf
+              thisprod=-Inf;
+          end
+          
+          if thisprod>mp
+              mp=thisprod;
+              max_prods(1:n,1)=i;
+              max_prods(1:n,2)=j:j+n-1;
+          end   
+        end    
+    end
+       
+end
+
+function [mp,newxp]=mpDiags(A,n)
+   
+    d=diags(A,n);
+    [mp,max_prods]=mpRows(d,n) ; 
+    
+    x=1:size(A,1);
+    y=1:size(A,2);
+    [RR,CC]=ndgrid(x,y);
+    RR=diags(RR,n);
+    CC=diags(CC,n);
+    newxp=zeros(size(max_prods,1),2);
+    
+    for i=1:size(max_prods,1)
+        newxp(i,1)=RR(max_prods(i,1),max_prods(i,2));
+        newxp(i,2)=CC(max_prods(i,1),max_prods(i,2));
+    end
+end
+
+function d=diags(A,n)
+    rows=size(A,1);
+    cols=size(A,2);
+    
+    if rows>cols
+        A=A';
+        rows=size(A,1);
+        cols=size(A,2);
+    end
+    Aninf=-inf(rows,cols);
+    Abig=[Aninf,A,Aninf];
+    diagonals=zeros(rows,2*cols);
+    
+    for i = 1:2*cols
+        for j=1:rows
+            diagonals(j,i)=Abig(j,i+j-1);
+        end
+    end
+    d=diagonals';  
+end
